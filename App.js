@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import TambahAnggotaScreen from "./screens/TambahAnggotaScreen";
+import LandingScreen from "./screens/LandingScreen";
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import GrupScreen from "./screens/GrupScreen";
@@ -78,7 +79,10 @@ function AppContent() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated && (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <>
+            <Stack.Screen name="Landing" component={LandingScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+          </>
         )}
         {isAuthenticated && <Stack.Screen name="Home" component={MainTabs} />}
         <Stack.Screen name="DetailArisan" component={DetailArisanScreen} />

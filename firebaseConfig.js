@@ -21,7 +21,7 @@ const firebaseConfig = {
   measurementId: "G-13R70QXE7W",
 
   // Google OAuth Client IDs untuk Google Sign-In (expo-auth-session)
-  webClientId: "PASTE_YOUR_GOOGLE_WEB_CLIENT_ID_HERE",
+  webClientId: "16613510760-k4hf7k4n8tc7jdu8pns49t4n1ftvdtjk.apps.googleusercontent.com",
   androidClientId: "PASTE_YOUR_ANDROID_CLIENT_ID_HERE",
   iosClientId: "PASTE_YOUR_IOS_CLIENT_ID_HERE",
 };
