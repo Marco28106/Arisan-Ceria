@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -64,8 +65,24 @@ function MainTabs() {
 
 function AppContent() {
   const { loading, currentUser } = useContext(UserContext);
+  const [seenLanding, setSeenLanding] = useState(null);
 
-  if (loading) {
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const v = await AsyncStorage.getItem("seenLanding");
+        if (alive) setSeenLanding(v === "true");
+      } catch (e) {
+        if (alive) setSeenLanding(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (loading || seenLanding === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#A04030" />
@@ -74,17 +91,24 @@ function AppContent() {
   }
 
   const isAuthenticated = !!currentUser;
+  const shouldShowLanding = !seenLanding;
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!isAuthenticated && (
+        {shouldShowLanding ? (
+          <Stack.Screen name="Landing" component={LandingScreen} />
+        ) : (
           <>
-            <Stack.Screen name="Landing" component={LandingScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
+            {!isAuthenticated && (
+              <Stack.Screen name="Login" component={LoginScreen} />
+            )}
+            {isAuthenticated && (
+              <Stack.Screen name="Home" component={MainTabs} />
+            )}
           </>
         )}
-        {isAuthenticated && <Stack.Screen name="Home" component={MainTabs} />}
+
         <Stack.Screen name="DetailArisan" component={DetailArisanScreen} />
         <Stack.Screen name="Kocok" component={KocokScreen} />
         <Stack.Screen name="TambahArisan" component={TambahArisanScreen} />
