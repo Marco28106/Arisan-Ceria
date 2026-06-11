@@ -5,7 +5,9 @@ import {
   initializeAuth,
   getReactNativePersistence,
   getAuth,
+  browserLocalPersistence,
 } from "firebase/auth";
+import { Platform } from "react-native"; // <-- Tambahkan ini untuk mengecek environment
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 // Konfigurasi Firebase Anda
@@ -32,11 +34,19 @@ const db = getFirestore(app);
 /* 3. Inisialisasi Storage */
 const storage = getStorage(app);
 
-// 3. Inisialisasi Auth dengan persistence.
-// Ini harus dipanggil sekali saat aplikasi dimulai untuk mengatur persistence.
-// getAuth(app) dapat digunakan di tempat lain untuk mendapatkan instance auth yang sama.
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
-});
+// 3. Inisialisasi Auth secara kondisional berdasarkan Platform (Web vs Mobile)
+let auth;
+
+if (Platform.OS === 'web') {
+  // Jika dibuka di browser (Vercel), gunakan Local Storage browser biasa
+  auth = initializeAuth(app, {
+    persistence: browserLocalPersistence,
+  });
+} else {
+  // Jika dibuka di Android / iOS, gunakan AsyncStorage bawaan React Native
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  });
+}
 
 export { db, auth, storage, firebaseConfig };
